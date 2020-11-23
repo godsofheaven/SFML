@@ -8,6 +8,8 @@ sf::Texture skyTexture;
 sf::Sprite skySprite;
 sf::Texture heroTexture;
 sf::Sprite heroSprite;
+sf::Vector2f playerPosition;
+bool playerMoving = false;
 
 
 void init() {
@@ -26,9 +28,38 @@ void draw() {
 	window.draw(heroSprite);
 }
 
+void updateInput() {
+	sf::Event event;
+	while (window.pollEvent(event)) {
+		if (event.type == sf::Event::KeyPressed) {
+			if (event.key.code == sf::Keyboard::Right) {
+				playerMoving = true;
+			}
+		}
+		if (event.type == sf::Event::KeyReleased) {
+			if (event.key.code == sf::Keyboard::Right) {
+				playerMoving = false;
+			}
+		}
+		if (event.key.code == sf::Keyboard::Escape || event.type
+			== sf::Event::Closed)
+			window.close();
+	}
+}
+
+void update(float dt) {
+	if (playerMoving) {
+		heroSprite.move(50.0f * dt, 0);
+	}
+}
+
 int main() {
+	sf::Clock clock;
 	init();
 	while (window.isOpen()) {
+		updateInput();
+		sf::Time dt = clock.restart();
+		update(dt.asSeconds());
 		window.clear(sf::Color::Red);
 		draw();
 		window.display();
